@@ -24,13 +24,13 @@
             justify-content: flex-end;
             padding: 10px;
             box-sizing: border-box;
-            color: #fff;
         }
 
         #output {
             flex-grow: 1;
             overflow-y: scroll;
             white-space: pre-wrap;
+            color: #fff; /* Yazı rengini beyaz yap */
         }
 
         #prompt {
@@ -39,6 +39,7 @@
 
         #prompt-label {
             flex-grow: 0;
+            color: #fff; /* Yazı rengini beyaz yap */
         }
 
         #prompt-input {
@@ -46,7 +47,7 @@
             border: none;
             background-color: transparent;
             outline: none;
-            color: #fff;
+            color: #fff; /* Yazı rengini beyaz yap */
         }
     </style>
 </head>
@@ -73,15 +74,19 @@
         });
 
         function executeCommand(command) {
+            const sanitizedCommand = sanitizeInput(command);
             const responses = {
                 'ls': 'police.txt fbi.txt sqlbackup.zip sinop57.php rte.rar',
-                'cat police.txt': 'cm9vdGF5eWlsZGl6MTMzNy5naXRodWIuaW8vcHJvZmlsLnppcA==',
-                'fbi.txt sqlbackup.zip sinop57.php rte.rar': 'Permission denied'
+                'cat police.txt': 'Content of police.txt: Lorem ipsum 1337.github.io/prof.zip',
+                'fbi.txt': 'Content of fbi.txt: Classified information',
+                'sqlbackup.zip': 'Content of sqlbackup.zip: Database backup',
+                'sinop57.php': 'Content of sinop57.php: &lt;?php echo "Hello, World!"; ?&gt;',
+                'rte.rar': 'Content of rte.rar: Recep Tayyip Erdoğan'
             };
 
-            if (command in responses) {
-                output.innerHTML += `<div>$ ${command}</div>`;
-                const response = responses[command];
+            if (sanitizedCommand in responses) {
+                output.innerHTML += `<div>$ ${sanitizedCommand}</div>`;
+                const response = responses[sanitizedCommand];
                 if (response === 'Permission denied') {
                     output.innerHTML += `<div style="color: red;">${response}</div>`;
                     hasPermission = false;
@@ -92,10 +97,15 @@
                 if (!hasPermission) {
                     output.innerHTML += `<div style="color: red;">You do not have permission to access these files</div>`;
                 } else {
-                    output.innerHTML += `<div>$ ${command}</div>`;
+                    output.innerHTML += `<div>$ ${sanitizedCommand}</div>`;
                     output.innerHTML += `<div>Command not found</div>`;
                 }
             }
+        }
+
+        // Güvenli metin oluşturmak için özel karakterleri temizleyen işlev
+        function sanitizeInput(input) {
+            return input.replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
     </script>
 </body>
